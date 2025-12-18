@@ -92,7 +92,7 @@ function App() {
     return encodeURIComponent(message)
   }
 
-  const whatsappNumber = '56936380348'
+  const whatsappNumber = '56978084798'
   const whatsappLink = `https://wa.me/${whatsappNumber}?text=${generateWhatsAppMessage()}`
 
   if (loading) {

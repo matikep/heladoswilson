@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { ref, onValue } from 'firebase/database'
+import { ref, onValue, push, set } from 'firebase/database'
 import { database } from './firebase'
 import './App.css'
 
@@ -19,6 +19,8 @@ function App() {
   const [cart, setCart] = useState<CartItem[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+  const [customerName, setCustomerName] = useState('')
+  const [showNameModal, setShowNameModal] = useState(false)
 
   useEffect(() => {
     // Escuchar cambios en el stock en tiempo real
@@ -81,19 +83,70 @@ function App() {
   const generateWhatsAppMessage = (): string => {
     if (cart.length === 0) return ''
     
-    let message = '¡Hola! Me gustaría hacer el siguiente pedido de Helados Caseros:\n\n'
+    let message = `Hola! Soy ${customerName}. Me gustaria hacer el siguiente pedido de Helados Caseros:\n\n`
     
     cart.forEach(item => {
-      message += `🍦 ${item.name} x${item.quantity} - $${item.price * item.quantity}\n`
+      message += `- ${item.name} x${item.quantity} - $${item.price * item.quantity}\n`
     })
     
-    message += `\n💰 Total: $${getTotalPrice()}\n\n¡Gracias!`
+    message += `\nTotal: $${getTotalPrice()}\n\nGracias!`
     
     return encodeURIComponent(message)
   }
 
+  const handleSendOrder = async () => {
+    if (!customerName.trim()) {
+      setShowNameModal(true)
+      return
+    }
+
+    try {
+      // Guardar pedido en Firebase
+      const ordersRef = ref(database, 'orders')
+      const newOrderRef = push(ordersRef)
+      
+      const orderData = {
+        id: newOrderRef.key,
+        customerName: customerName.trim(),
+        items: cart.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          icon: item.icon,
+          quantity: item.quantity
+        })),
+        total: getTotalPrice(),
+        status: 'pending', // pending, confirmed, rejected
+        timestamp: Date.now(),
+        createdAt: new Date().toISOString()
+      }
+
+      await set(newOrderRef, orderData)
+
+      // Abrir WhatsApp
+      const whatsappNumber = '56978084798'
+      const whatsappLink = `https://wa.me/${whatsappNumber}?text=${generateWhatsAppMessage()}`
+      window.open(whatsappLink, '_blank')
+
+      // Limpiar carrito
+      setCart([])
+      alert('¡Pedido enviado! Te contactaremos pronto por WhatsApp.')
+    } catch (error) {
+      console.error('Error al guardar el pedido:', error)
+      alert('Hubo un error al procesar tu pedido. Por favor intenta nuevamente.')
+    }
+  }
+
+  const handleNameSubmit = () => {
+    if (customerName.trim()) {
+      setShowNameModal(false)
+      handleSendOrder()
+    } else {
+      alert('Por favor ingresa tu nombre')
+    }
+  }
+
   const whatsappNumber = '56978084798'
-  const whatsappLink = `https://wa.me/${whatsappNumber}?text=${generateWhatsAppMessage()}`
 
   if (loading) {
     return (
@@ -204,15 +257,13 @@ function App() {
               <span className="cart-total-amount">${getTotalPrice()}</span>
             </div>
 
-            <a
-              href={whatsappLink}
+            <button
+              onClick={handleSendOrder}
               className="whatsapp-btn"
-              target="_blank"
-              rel="noopener noreferrer"
             >
               <span style={{ fontSize: '1.5rem' }}>💬</span>
               Enviar Pedido por WhatsApp
-            </a>
+            </button>
           </div>
         )}
 
@@ -224,10 +275,38 @@ function App() {
           </div>
         )}
 
+        {/* Name Modal */}
+        {showNameModal && (
+          <div className="modal-overlay" onClick={() => setShowNameModal(false)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <h2>¿Cuál es tu nombre?</h2>
+              <p>Para procesar tu pedido, necesitamos saber cómo te llamas</p>
+              <input
+                type="text"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                placeholder="Ingresa tu nombre"
+                className="name-input"
+                autoFocus
+                onKeyPress={(e) => e.key === 'Enter' && handleNameSubmit()}
+              />
+              <div className="modal-actions">
+                <button onClick={handleNameSubmit} className="confirm-btn">
+                  Continuar
+                </button>
+                <button onClick={() => setShowNameModal(false)} className="cancel-modal-btn">
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Footer */}
         <footer className="footer">
-          <p>📞 Contáctanos</p>
-          <span className="phone-number">+{whatsappNumber}</span>
+          <span className="footer-text">
+            Helados hechos con amor ❤️… y azúcar 😎🍦
+          </span>
         </footer>
       </div>
     </div>

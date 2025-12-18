@@ -11,15 +11,35 @@ interface Product {
   stock: number
 }
 
+interface OrderItem {
+  id: number
+  name: string
+  price: number
+  icon: string
+  quantity: number
+}
+
+interface Order {
+  id: string
+  customerName: string
+  items: OrderItem[]
+  total: number
+  status: 'pending' | 'confirmed' | 'rejected'
+  timestamp: number
+  createdAt: string
+}
+
 const ADMIN_PASSWORD = 'wilsondeloswilsonitos2025' // Cambia esta contraseña
 
 function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [password, setPassword] = useState('')
   const [products, setProducts] = useState<Product[]>([])
+  const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
+  const [activeTab, setActiveTab] = useState<'products' | 'orders'>('products')
   
   // Form states
   const [formData, setFormData] = useState({
@@ -32,7 +52,7 @@ function Admin() {
   useEffect(() => {
     // Escuchar cambios en el stock
     const stockRef = ref(database, 'stock')
-    const unsubscribe = onValue(stockRef, (snapshot) => {
+    const unsubscribeStock = onValue(stockRef, (snapshot) => {
       const data = snapshot.val()
       if (data) {
         setProducts(data)
@@ -51,7 +71,24 @@ function Admin() {
       setLoading(false)
     })
 
-    return () => unsubscribe()
+    // Escuchar cambios en los pedidos
+    const ordersRef = ref(database, 'orders')
+    const unsubscribeOrders = onValue(ordersRef, (snapshot) => {
+      const data = snapshot.val()
+      if (data) {
+        const ordersArray = Object.values(data) as Order[]
+        // Ordenar por timestamp descendente (más recientes primero)
+        ordersArray.sort((a, b) => b.timestamp - a.timestamp)
+        setOrders(ordersArray)
+      } else {
+        setOrders([])
+      }
+    })
+
+    return () => {
+      unsubscribeStock()
+      unsubscribeOrders()
+    }
   }, [])
 
   const handleLogin = (e: React.FormEvent) => {
@@ -131,6 +168,40 @@ function Admin() {
     setFormData({ name: '', price: 0, icon: '🍦', stock: 10 })
   }
 
+  const confirmOrder = (order: Order) => {
+    if (!confirm(`¿Confirmar pedido de ${order.customerName}?`)) return
+
+    // Actualizar stock
+    const updatedProducts = [...products]
+    order.items.forEach(item => {
+      const productIndex = updatedProducts.findIndex(p => p.id === item.id)
+      if (productIndex !== -1) {
+        updatedProducts[productIndex] = {
+          ...updatedProducts[productIndex],
+          stock: Math.max(0, updatedProducts[productIndex].stock - item.quantity)
+        }
+      }
+    })
+
+    // Guardar productos actualizados
+    saveProducts(updatedProducts)
+
+    // Actualizar estado del pedido
+    const orderRef = ref(database, `orders/${order.id}`)
+    set(orderRef, { ...order, status: 'confirmed' })
+
+    alert('Pedido confirmado y stock actualizado')
+  }
+
+  const rejectOrder = (order: Order) => {
+    if (!confirm(`¿Rechazar pedido de ${order.customerName}?`)) return
+
+    const orderRef = ref(database, `orders/${order.id}`)
+    set(orderRef, { ...order, status: 'rejected' })
+
+    alert('Pedido rechazado')
+  }
+
   if (loading) {
     return (
       <div className="admin-container">
@@ -194,8 +265,24 @@ function Admin() {
           </a>
         </div>
 
+        {/* Tabs */}
+        <div className="tabs">
+          <button
+            className={`tab ${activeTab === 'products' ? 'active' : ''}`}
+            onClick={() => setActiveTab('products')}
+          >
+            🍦 Productos ({products.length})
+          </button>
+          <button
+            className={`tab ${activeTab === 'orders' ? 'active' : ''}`}
+            onClick={() => setActiveTab('orders')}
+          >
+            📦 Pedidos ({orders.filter(o => o.status === 'pending').length})
+          </button>
+        </div>
+
         {/* Add New Product Form */}
-        {showAddForm && (
+        {showAddForm && activeTab === 'products' && (
           <div className="product-form-card">
             <h3>➕ Nuevo Helado</h3>
             <div className="form-grid">
@@ -247,7 +334,9 @@ function Admin() {
           </div>
         )}
 
-        <div className="stock-grid">
+        {/* Products Section */}
+        {activeTab === 'products' && (
+          <div className="stock-grid">
           {products.map((product) => (
             <div key={product.id} className="stock-card">
               {editingId === product.id ? (
@@ -356,7 +445,149 @@ function Admin() {
               )}
             </div>
           ))}
-        </div>
+          </div>
+        )}
+
+        {/* Orders Section */}
+        {activeTab === 'orders' && (
+          <div className="orders-section">
+            {orders.length === 0 ? (
+              <div className="no-orders">
+                <span style={{ fontSize: '4rem' }}>📦</span>
+                <h3>No hay pedidos aún</h3>
+                <p>Los pedidos aparecerán aquí cuando los clientes los envíen</p>
+              </div>
+            ) : (
+              <>
+                {/* Pending Orders */}
+                {orders.filter(o => o.status === 'pending').length > 0 && (
+                  <div className="orders-group">
+                    <h3 className="orders-group-title">⏳ Pedidos Pendientes</h3>
+                    <div className="orders-grid">
+                      {orders.filter(o => o.status === 'pending').map(order => (
+                        <div key={order.id} className="order-card pending">
+                          <div className="order-header">
+                            <div>
+                              <h4>👤 {order.customerName}</h4>
+                              <p className="order-date">
+                                {new Date(order.createdAt).toLocaleString('es-CL')}
+                              </p>
+                            </div>
+                            <span className="order-status pending-status">Pendiente</span>
+                          </div>
+                          
+                          <div className="order-items">
+                            {order.items.map((item, idx) => (
+                              <div key={idx} className="order-item">
+                                <span>{item.icon} {item.name}</span>
+                                <span>x{item.quantity}</span>
+                                <span>${item.price * item.quantity}</span>
+                              </div>
+                            ))}
+                          </div>
+
+                          <div className="order-total">
+                            <strong>Total:</strong>
+                            <strong>${order.total}</strong>
+                          </div>
+
+                          <div className="order-actions">
+                            <button 
+                              onClick={() => confirmOrder(order)} 
+                              className="confirm-order-btn"
+                            >
+                              ✅ Confirmar
+                            </button>
+                            <button 
+                              onClick={() => rejectOrder(order)} 
+                              className="reject-order-btn"
+                            >
+                              ❌ Rechazar
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Confirmed Orders */}
+                {orders.filter(o => o.status === 'confirmed').length > 0 && (
+                  <div className="orders-group">
+                    <h3 className="orders-group-title">✅ Pedidos Confirmados</h3>
+                    <div className="orders-grid">
+                      {orders.filter(o => o.status === 'confirmed').map(order => (
+                        <div key={order.id} className="order-card confirmed">
+                          <div className="order-header">
+                            <div>
+                              <h4>👤 {order.customerName}</h4>
+                              <p className="order-date">
+                                {new Date(order.createdAt).toLocaleString('es-CL')}
+                              </p>
+                            </div>
+                            <span className="order-status confirmed-status">Confirmado</span>
+                          </div>
+                          
+                          <div className="order-items">
+                            {order.items.map((item, idx) => (
+                              <div key={idx} className="order-item">
+                                <span>{item.icon} {item.name}</span>
+                                <span>x{item.quantity}</span>
+                                <span>${item.price * item.quantity}</span>
+                              </div>
+                            ))}
+                          </div>
+
+                          <div className="order-total">
+                            <strong>Total:</strong>
+                            <strong>${order.total}</strong>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Rejected Orders */}
+                {orders.filter(o => o.status === 'rejected').length > 0 && (
+                  <div className="orders-group">
+                    <h3 className="orders-group-title">❌ Pedidos Rechazados</h3>
+                    <div className="orders-grid">
+                      {orders.filter(o => o.status === 'rejected').map(order => (
+                        <div key={order.id} className="order-card rejected">
+                          <div className="order-header">
+                            <div>
+                              <h4>👤 {order.customerName}</h4>
+                              <p className="order-date">
+                                {new Date(order.createdAt).toLocaleString('es-CL')}
+                              </p>
+                            </div>
+                            <span className="order-status rejected-status">Rechazado</span>
+                          </div>
+                          
+                          <div className="order-items">
+                            {order.items.map((item, idx) => (
+                              <div key={idx} className="order-item">
+                                <span>{item.icon} {item.name}</span>
+                                <span>x{item.quantity}</span>
+                                <span>${item.price * item.quantity}</span>
+                              </div>
+                            ))}
+                          </div>
+
+                          <div className="order-total">
+                            <strong>Total:</strong>
+                            <strong>${order.total}</strong>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
 
         <div className="admin-footer">
           <p>💡 Los cambios se guardan automáticamente y se reflejan en tiempo real para todos los clientes</p>

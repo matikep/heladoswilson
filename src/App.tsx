@@ -146,8 +146,6 @@ function App() {
     }
   }
 
-  const whatsappNumber = '56978084798'
-
   if (loading) {
     return (
       <div className="app">

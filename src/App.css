@@ -1,0 +1,444 @@
+.app {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #FFF8F0 0%, #FFE8D6 100%);
+  padding: 2rem 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative elements */
+.app::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255, 182, 193, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: float 6s ease-in-out infinite;
+}
+
+.app::after {
+  content: '';
+  position: absolute;
+  bottom: -100px;
+  left: -100px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(152, 216, 200, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: float 8s ease-in-out infinite;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.header-decoration {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.ice-cream-icon {
+  font-size: 3rem;
+  animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 8px rgba(139, 111, 71, 0.2));
+}
+
+.ice-cream-icon:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.ice-cream-icon:nth-child(3) {
+  animation-delay: 1s;
+}
+
+.ice-cream-icon:nth-child(4) {
+  animation-delay: 1.5s;
+}
+
+.title {
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-weight: 700;
+  background: var(--gradient-1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-size: clamp(1.2rem, 4vw, 1.8rem);
+  color: var(--brown);
+  font-weight: 300;
+  letter-spacing: 0.05em;
+}
+
+/* Products Grid */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.product-card {
+  background: white;
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: scaleIn 0.6s ease-out backwards;
+  cursor: pointer;
+  border: 3px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.product-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: var(--gradient-1);
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+}
+
+.product-card:hover::before {
+  transform: scaleX(1);
+}
+
+.product-card:nth-child(1) { animation-delay: 0.1s; }
+.product-card:nth-child(2) { animation-delay: 0.2s; }
+.product-card:nth-child(3) { animation-delay: 0.3s; }
+.product-card:nth-child(4) { animation-delay: 0.4s; }
+.product-card:nth-child(5) { animation-delay: 0.5s; }
+
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--coral);
+}
+
+.product-card.selected {
+  border-color: var(--coral);
+  background: linear-gradient(135deg, #FFF 0%, #FFF8F0 100%);
+  box-shadow: var(--shadow-hover);
+}
+
+.product-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  display: block;
+  text-align: center;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.product-name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--dark-brown);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.product-price {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--coral);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.quantity-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--coral);
+  background: white;
+  color: var(--coral);
+  font-size: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quantity-btn:hover {
+  background: var(--coral);
+  color: white;
+  transform: scale(1.1);
+}
+
+.quantity-btn:active {
+  transform: scale(0.95);
+}
+
+.quantity-display {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--dark-brown);
+  min-width: 40px;
+  text-align: center;
+}
+
+/* Cart Summary */
+.cart-summary {
+  background: white;
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  animation: fadeInUp 0.8s ease-out 0.6s backwards;
+  margin-bottom: 2rem;
+}
+
+.cart-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--dark-brown);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.cart-items {
+  margin-bottom: 1.5rem;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--cream);
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.cart-item:hover {
+  background: var(--peach);
+  transform: translateX(4px);
+}
+
+.cart-item-name {
+  font-weight: 600;
+  color: var(--dark-brown);
+}
+
+.cart-item-details {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  color: var(--brown);
+}
+
+.cart-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: var(--gradient-1);
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+}
+
+.cart-total-label {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+}
+
+.cart-total-amount {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+}
+
+/* WhatsApp Button */
+.whatsapp-btn {
+  width: 100%;
+  padding: 1.5rem;
+  background: #25D366;
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.3);
+  text-decoration: none;
+}
+
+.whatsapp-btn:hover {
+  background: #20BA5A;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
+  animation: pulse 1s ease infinite;
+}
+
+.whatsapp-btn:active {
+  transform: translateY(0);
+}
+
+.whatsapp-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.whatsapp-btn:disabled:hover {
+  transform: none;
+  animation: none;
+}
+
+.empty-cart {
+  text-align: center;
+  padding: 2rem;
+  color: var(--brown);
+  font-size: 1.1rem;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 2rem;
+  color: var(--brown);
+  font-size: 1.1rem;
+  animation: fadeInUp 0.8s ease-out 0.8s backwards;
+}
+
+.phone-number {
+  font-weight: 600;
+  color: var(--coral);
+  font-size: 1.3rem;
+  margin-top: 0.5rem;
+  display: block;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .app {
+    padding: 1rem 0.5rem;
+  }
+
+  .products-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .product-card {
+    padding: 1.5rem;
+  }
+
+  .cart-summary {
+    padding: 1.5rem;
+  }
+}
+
+/* Loading */
+.loading-container {
+  text-align: center;
+  padding: 4rem 2rem;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.loading-icon {
+  font-size: 5rem;
+  display: block;
+  margin-bottom: 1rem;
+  animation: float 2s ease-in-out infinite;
+}
+
+.loading-container p {
+  font-size: 1.3rem;
+  color: var(--brown);
+  font-weight: 500;
+}
+
+/* Stock Indicator */
+.stock-indicator {
+  text-align: center;
+  min-height: 24px;
+  margin-bottom: 0.5rem;
+}
+
+.low-stock-badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  color: #856404;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* No Stock Message */
+.no-stock-message {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.no-stock-message h2 {
+  font-size: 2rem;
+  color: var(--dark-brown);
+  margin: 1rem 0;
+}
+
+.no-stock-message p {
+  font-size: 1.2rem;
+  color: var(--brown);
+  margin: 0.5rem 0;
+}
+
+/* Disabled button styles */
+.quantity-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-color: #ccc;
+  color: #ccc;
+}
+
+.quantity-btn:disabled:hover {
+  background: white;
+  color: #ccc;
+  transform: none;
+}
+

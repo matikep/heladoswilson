@@ -94,11 +94,11 @@
 /* Admin Panel */
 .admin-panel {
   background: white;
-  border-radius: 24px;
-  padding: 2rem;
+  border-radius: 16px;
+  padding: 1.25rem;
   max-width: 1200px;
   width: 100%;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   animation: fadeInUp 0.5s ease-out;
 }
 
@@ -106,33 +106,34 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
   border-bottom: 2px solid #f0f0f0;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .admin-header h1 {
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: var(--dark-brown);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.15rem;
 }
 
 .admin-header p {
   color: var(--brown);
-  font-size: 1rem;
+  font-size: 0.85rem;
 }
 
 .logout-btn {
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1rem;
   background: #ff4757;
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: 0.85rem;
 }
 
 .logout-btn:hover {
@@ -143,8 +144,8 @@
 /* Actions */
 .admin-actions {
   display: flex;
-  gap: 0.75rem;
-  margin-bottom: 2rem;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
   flex-wrap: wrap;
 }
 
@@ -195,58 +196,58 @@
 /* Stock Grid */
 .stock-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .stock-card {
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  border-radius: 16px;
-  padding: 1.5rem;
+  border-radius: 12px;
+  padding: 1rem;
   transition: all 0.3s ease;
 }
 
 .stock-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
 .stock-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
 .stock-icon {
-  font-size: 3rem;
+  font-size: 2.5rem;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .stock-header h3 {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   color: var(--dark-brown);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.15rem;
 }
 
 .stock-price {
   color: var(--coral);
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 0.95rem;
 }
 
 .stock-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .stock-badge {
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.75rem;
   font-weight: 600;
 }
 
@@ -268,21 +269,21 @@
 .stock-count {
   font-weight: 600;
   color: var(--dark-brown);
-  font-size: 1.1rem;
+  font-size: 0.95rem;
 }
 
 .stock-controls {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
   align-items: center;
 }
 
 .stock-btn {
-  width: 50px;
-  height: 50px;
-  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -298,7 +299,7 @@
 }
 
 .stock-btn:hover:not(:disabled) {
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 
 .stock-btn:disabled {
@@ -308,10 +309,10 @@
 
 .stock-input {
   flex: 1;
-  padding: 0.75rem;
+  padding: 0.5rem;
   border: 2px solid #ddd;
-  border-radius: 12px;
-  font-size: 1.2rem;
+  border-radius: 10px;
+  font-size: 1rem;
   font-weight: 600;
   text-align: center;
   font-family: 'Outfit', sans-serif;
@@ -324,10 +325,11 @@
 
 .admin-footer {
   text-align: center;
-  padding: 1.5rem;
+  padding: 1rem;
   background: #f8f9fa;
-  border-radius: 12px;
+  border-radius: 10px;
   color: var(--brown);
+  font-size: 0.85rem;
 }
 
 /* Responsive */
@@ -367,42 +369,42 @@
 /* Product Form Card */
 .product-form-card {
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  border-radius: 16px;
-  padding: 2rem;
-  margin-bottom: 2rem;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
   animation: scaleIn 0.3s ease-out;
 }
 
 .product-form-card h3 {
-  font-size: 1.5rem;
+  font-size: 1.15rem;
   color: var(--dark-brown);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.35rem;
 }
 
 .form-group label {
   font-weight: 600;
   color: var(--dark-brown);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
 .form-input {
-  padding: 0.75rem;
+  padding: 0.6rem;
   border: 2px solid #ddd;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-family: 'Outfit', sans-serif;
   transition: all 0.3s ease;
 }
@@ -414,19 +416,19 @@
 }
 
 .emoji-input {
-  font-size: 2rem;
+  font-size: 1.75rem;
   text-align: center;
-  width: 80px;
+  width: 70px;
 }
 
 .save-product-btn {
   width: 100%;
-  padding: 1rem;
+  padding: 0.75rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  border-radius: 12px;
-  font-size: 1.1rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -434,7 +436,7 @@
 
 .save-product-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
 }
 
 /* Product Actions */
@@ -577,26 +579,26 @@
 }
 
 .orders-group-title {
-  font-size: 1.5rem;
+  font-size: 1.15rem;
   color: var(--dark-brown);
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.4rem;
   border-bottom: 2px solid #f0f0f0;
 }
 
 .orders-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
 }
 
 .order-card {
   background: white;
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
-  border-left: 4px solid;
+  border-left: 3px solid;
 }
 
 .order-card.pending {
@@ -612,34 +614,34 @@
 }
 
 .order-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
 .order-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
   border-bottom: 1px solid #f0f0f0;
 }
 
 .order-header h4 {
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: var(--dark-brown);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.15rem;
 }
 
 .order-date {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   color: var(--brown);
 }
 
 .order-status {
-  padding: 0.4rem 0.8rem;
-  border-radius: 12px;
-  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 10px;
+  font-size: 0.75rem;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -660,18 +662,18 @@
 }
 
 .order-items {
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .order-item {
   display: grid;
   grid-template-columns: 1fr auto auto;
-  gap: 1rem;
-  padding: 0.75rem;
+  gap: 0.75rem;
+  padding: 0.6rem;
   background: #f8f9fa;
-  border-radius: 8px;
-  margin-bottom: 0.5rem;
-  font-size: 0.95rem;
+  border-radius: 6px;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
 }
 
 .order-item span:first-child {
@@ -687,12 +689,12 @@
 .order-total {
   display: flex;
   justify-content: space-between;
-  padding: 1rem;
+  padding: 0.75rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 12px;
+  border-radius: 10px;
   color: white;
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
 }
 
 .order-actions {

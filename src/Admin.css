@@ -143,20 +143,21 @@
 /* Actions */
 .admin-actions {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   margin-bottom: 2rem;
   flex-wrap: wrap;
 }
 
 .reset-btn,
-.view-store-btn {
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
+.view-store-btn,
+.delete-all-btn {
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   border: none;
-  font-size: 1rem;
+  font-size: 0.9rem;
   text-decoration: none;
   display: inline-block;
 }
@@ -168,7 +169,17 @@
 
 .reset-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(240, 147, 251, 0.4);
+  box-shadow: 0 6px 16px rgba(240, 147, 251, 0.4);
+}
+
+.delete-all-btn {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  color: white;
+}
+
+.delete-all-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 107, 107, 0.4);
 }
 
 .view-store-btn {
@@ -178,7 +189,7 @@
 
 .view-store-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(79, 172, 254, 0.4);
+  box-shadow: 0 6px 16px rgba(79, 172, 254, 0.4);
 }
 
 /* Stock Grid */
@@ -337,20 +348,20 @@
 
 /* Add Button */
 .add-btn {
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   border: none;
-  font-size: 1rem;
+  font-size: 0.9rem;
   background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
   color: white;
 }
 
 .add-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(17, 153, 142, 0.4);
+  box-shadow: 0 6px 16px rgba(17, 153, 142, 0.4);
 }
 
 /* Product Form Card */
@@ -686,19 +697,20 @@
 
 .order-actions {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .confirm-order-btn,
-.reject-order-btn {
+.reject-order-btn,
+.delete-order-btn {
   flex: 1;
-  padding: 0.75rem;
+  padding: 0.6rem;
   border: none;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
 }
 
 .confirm-order-btn {
@@ -721,6 +733,56 @@
   box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
 }
 
+.delete-order-btn {
+  flex: 0 0 auto;
+  min-width: 45px;
+  background: #6c757d;
+  color: white;
+}
+
+.delete-order-btn:hover {
+  background: #5a6268;
+  transform: translateY(-2px);
+}
+
+.delete-order-btn-solo {
+  width: 100%;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.85rem;
+  background: #6c757d;
+  color: white;
+}
+
+.delete-order-btn-solo:hover {
+  background: #5a6268;
+  transform: translateY(-2px);
+}
+
+/* Order Number */
+.order-number {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #667eea;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.25rem;
+}
+
+/* Old Orders */
+.order-card.old {
+  opacity: 0.85;
+  border-left-width: 2px;
+}
+
+.order-card.old .order-number {
+  color: #999;
+}
+
 @media (max-width: 768px) {
   .orders-grid {
     grid-template-columns: 1fr;
@@ -739,5 +801,13 @@
   .tab.active {
     border-bottom-color: #f0f0f0;
     border-left-color: #667eea;
+  }
+
+  .order-actions {
+    flex-wrap: wrap;
+  }
+
+  .delete-order-btn {
+    flex: 1 1 100%;
   }
 }

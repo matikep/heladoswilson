@@ -202,6 +202,41 @@ function Admin() {
     alert('Pedido rechazado')
   }
 
+  const deleteOrder = (orderId: string) => {
+    if (!confirm('¿Estás seguro de eliminar este pedido?')) return
+
+    const orderRef = ref(database, `orders/${orderId}`)
+    set(orderRef, null)
+
+    alert('Pedido eliminado')
+  }
+
+  const deleteAllOrders = () => {
+    if (!confirm('⚠️ ¿Estás seguro de eliminar TODOS los pedidos? Esta acción no se puede deshacer.')) return
+
+    const ordersRef = ref(database, 'orders')
+    set(ordersRef, null)
+
+    alert('Todos los pedidos han sido eliminados')
+  }
+
+  // Función para verificar si un pedido es de hoy
+  const isToday = (timestamp: number): boolean => {
+    const today = new Date()
+    const orderDate = new Date(timestamp)
+    return (
+      today.getDate() === orderDate.getDate() &&
+      today.getMonth() === orderDate.getMonth() &&
+      today.getFullYear() === orderDate.getFullYear()
+    )
+  }
+
+  // Función para obtener el número de pedido (basado en el orden de llegada)
+  const getOrderNumber = (order: Order): number => {
+    const allOrders = [...orders].sort((a, b) => a.timestamp - b.timestamp)
+    return allOrders.findIndex(o => o.id === order.id) + 1
+  }
+
   if (loading) {
     return (
       <div className="admin-container">
@@ -258,8 +293,13 @@ function Admin() {
             {showAddForm ? '❌ Cancelar' : '➕ Agregar Nuevo Helado'}
           </button>
           <button onClick={resetAllStock} className="reset-btn">
-            🔄 Resetear Todo el Stock
+            🔄 Resetear Stock
           </button>
+          {orders.length > 0 && (
+            <button onClick={deleteAllOrders} className="delete-all-btn">
+              🗑️ Eliminar Todos los Pedidos
+            </button>
+          )}
           <a href="/" className="view-store-btn">
             👁️ Ver Tienda
           </a>
@@ -459,16 +499,76 @@ function Admin() {
               </div>
             ) : (
               <>
-                {/* Pending Orders */}
-                {orders.filter(o => o.status === 'pending').length > 0 && (
+                {/* Pedidos de Hoy - Pendientes */}
+                {orders.filter(o => o.status === 'pending' && isToday(o.timestamp)).length > 0 && (
                   <div className="orders-group">
-                    <h3 className="orders-group-title">⏳ Pedidos Pendientes</h3>
+                    <h3 className="orders-group-title">⏳ Pedidos Pendientes de Hoy</h3>
                     <div className="orders-grid">
-                      {orders.filter(o => o.status === 'pending').map(order => (
+                      {orders.filter(o => o.status === 'pending' && isToday(o.timestamp)).map(order => (
                         <div key={order.id} className="order-card pending">
                           <div className="order-header">
                             <div>
-                              <h4>👤 {order.customerName}</h4>
+                              <div className="order-number">Pedido #{getOrderNumber(order)}</div>
+                              <h4>{order.customerName}</h4>
+                              <p className="order-date">
+                                {new Date(order.createdAt).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}
+                              </p>
+                            </div>
+                            <span className="order-status pending-status">Pendiente</span>
+                          </div>
+                          
+                          <div className="order-items">
+                            {order.items.map((item, idx) => (
+                              <div key={idx} className="order-item">
+                                <span>{item.icon} {item.name}</span>
+                                <span>x{item.quantity}</span>
+                                <span>${item.price * item.quantity}</span>
+                              </div>
+                            ))}
+                          </div>
+
+                          <div className="order-total">
+                            <strong>Total:</strong>
+                            <strong>${order.total}</strong>
+                          </div>
+
+                          <div className="order-actions">
+                            <button 
+                              onClick={() => confirmOrder(order)} 
+                              className="confirm-order-btn"
+                            >
+                              ✅ Confirmar
+                            </button>
+                            <button 
+                              onClick={() => rejectOrder(order)} 
+                              className="reject-order-btn"
+                            >
+                              ❌ Rechazar
+                            </button>
+                            <button 
+                              onClick={() => deleteOrder(order.id)} 
+                              className="delete-order-btn"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Pedidos de Días Anteriores - Pendientes */}
+                {orders.filter(o => o.status === 'pending' && !isToday(o.timestamp)).length > 0 && (
+                  <div className="orders-group">
+                    <h3 className="orders-group-title">📅 Pedidos Pendientes de Días Anteriores</h3>
+                    <div className="orders-grid">
+                      {orders.filter(o => o.status === 'pending' && !isToday(o.timestamp)).map(order => (
+                        <div key={order.id} className="order-card pending old">
+                          <div className="order-header">
+                            <div>
+                              <div className="order-number">Pedido #{getOrderNumber(order)}</div>
+                              <h4>{order.customerName}</h4>
                               <p className="order-date">
                                 {new Date(order.createdAt).toLocaleString('es-CL')}
                               </p>
@@ -504,6 +604,12 @@ function Admin() {
                             >
                               ❌ Rechazar
                             </button>
+                            <button 
+                              onClick={() => deleteOrder(order.id)} 
+                              className="delete-order-btn"
+                            >
+                              🗑️
+                            </button>
                           </div>
                         </div>
                       ))}
@@ -511,16 +617,62 @@ function Admin() {
                   </div>
                 )}
 
-                {/* Confirmed Orders */}
-                {orders.filter(o => o.status === 'confirmed').length > 0 && (
+                {/* Pedidos Confirmados de Hoy */}
+                {orders.filter(o => o.status === 'confirmed' && isToday(o.timestamp)).length > 0 && (
                   <div className="orders-group">
-                    <h3 className="orders-group-title">✅ Pedidos Confirmados</h3>
+                    <h3 className="orders-group-title">✅ Confirmados Hoy</h3>
                     <div className="orders-grid">
-                      {orders.filter(o => o.status === 'confirmed').map(order => (
+                      {orders.filter(o => o.status === 'confirmed' && isToday(o.timestamp)).map(order => (
                         <div key={order.id} className="order-card confirmed">
                           <div className="order-header">
                             <div>
-                              <h4>👤 {order.customerName}</h4>
+                              <div className="order-number">Pedido #{getOrderNumber(order)}</div>
+                              <h4>{order.customerName}</h4>
+                              <p className="order-date">
+                                {new Date(order.createdAt).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}
+                              </p>
+                            </div>
+                            <span className="order-status confirmed-status">Confirmado</span>
+                          </div>
+                          
+                          <div className="order-items">
+                            {order.items.map((item, idx) => (
+                              <div key={idx} className="order-item">
+                                <span>{item.icon} {item.name}</span>
+                                <span>x{item.quantity}</span>
+                                <span>${item.price * item.quantity}</span>
+                              </div>
+                            ))}
+                          </div>
+
+                          <div className="order-total">
+                            <strong>Total:</strong>
+                            <strong>${order.total}</strong>
+                          </div>
+
+                          <button 
+                            onClick={() => deleteOrder(order.id)} 
+                            className="delete-order-btn-solo"
+                          >
+                            🗑️ Eliminar
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Pedidos Confirmados de Días Anteriores */}
+                {orders.filter(o => o.status === 'confirmed' && !isToday(o.timestamp)).length > 0 && (
+                  <div className="orders-group">
+                    <h3 className="orders-group-title">✅ Confirmados Anteriores</h3>
+                    <div className="orders-grid">
+                      {orders.filter(o => o.status === 'confirmed' && !isToday(o.timestamp)).map(order => (
+                        <div key={order.id} className="order-card confirmed old">
+                          <div className="order-header">
+                            <div>
+                              <div className="order-number">Pedido #{getOrderNumber(order)}</div>
+                              <h4>{order.customerName}</h4>
                               <p className="order-date">
                                 {new Date(order.createdAt).toLocaleString('es-CL')}
                               </p>
@@ -542,13 +694,20 @@ function Admin() {
                             <strong>Total:</strong>
                             <strong>${order.total}</strong>
                           </div>
+
+                          <button 
+                            onClick={() => deleteOrder(order.id)} 
+                            className="delete-order-btn-solo"
+                          >
+                            🗑️ Eliminar
+                          </button>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {/* Rejected Orders */}
+                {/* Pedidos Rechazados */}
                 {orders.filter(o => o.status === 'rejected').length > 0 && (
                   <div className="orders-group">
                     <h3 className="orders-group-title">❌ Pedidos Rechazados</h3>
@@ -557,7 +716,8 @@ function Admin() {
                         <div key={order.id} className="order-card rejected">
                           <div className="order-header">
                             <div>
-                              <h4>👤 {order.customerName}</h4>
+                              <div className="order-number">Pedido #{getOrderNumber(order)}</div>
+                              <h4>{order.customerName}</h4>
                               <p className="order-date">
                                 {new Date(order.createdAt).toLocaleString('es-CL')}
                               </p>
@@ -579,6 +739,13 @@ function Admin() {
                             <strong>Total:</strong>
                             <strong>${order.total}</strong>
                           </div>
+
+                          <button 
+                            onClick={() => deleteOrder(order.id)} 
+                            className="delete-order-btn-solo"
+                          >
+                            🗑️ Eliminar
+                          </button>
                         </div>
                       ))}
                     </div>

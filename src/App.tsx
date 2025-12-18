@@ -22,6 +22,14 @@ function App() {
   const [customerName, setCustomerName] = useState('')
   const [showNameModal, setShowNameModal] = useState(false)
 
+  // Cargar nombre desde localStorage al iniciar
+  useEffect(() => {
+    const savedName = localStorage.getItem('customerName')
+    if (savedName) {
+      setCustomerName(savedName)
+    }
+  }, [])
+
   useEffect(() => {
     // Escuchar cambios en el stock en tiempo real
     const stockRef = ref(database, 'stock')
@@ -139,6 +147,8 @@ function App() {
 
   const handleNameSubmit = () => {
     if (customerName.trim()) {
+      // Guardar nombre en localStorage
+      localStorage.setItem('customerName', customerName.trim())
       setShowNameModal(false)
       handleSendOrder()
     } else {

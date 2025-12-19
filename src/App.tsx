@@ -32,6 +32,9 @@ function App() {
     }
     if (savedPhone) {
       setCustomerPhone(savedPhone)
+    } else {
+      // Inicializar con el prefijo +569
+      setCustomerPhone('+569')
     }
   }, [])
 
@@ -153,10 +156,10 @@ function App() {
 
   const handleNameSubmit = () => {
     if (customerName.trim() && customerPhone.trim()) {
-      // Validar formato de teléfono (básico)
-      const phoneRegex = /^[0-9+\s()-]+$/
+      // Validar que tenga exactamente +569 seguido de 8 dígitos
+      const phoneRegex = /^\+569\d{8}$/
       if (!phoneRegex.test(customerPhone.trim())) {
-        alert('Por favor ingresa un número de teléfono válido')
+        alert('Por favor ingresa un número de teléfono válido (debe tener 8 dígitos después de +569)')
         return
       }
       
@@ -167,6 +170,25 @@ function App() {
       handleSendOrder()
     } else {
       alert('Por favor completa todos los campos')
+    }
+  }
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    
+    // Siempre mantener el prefijo +569
+    if (!value.startsWith('+569')) {
+      setCustomerPhone('+569')
+      return
+    }
+    
+    // Solo permitir números después del prefijo
+    const digits = value.slice(4) // Obtener todo después de +569
+    const cleanDigits = digits.replace(/\D/g, '') // Solo dígitos
+    
+    // Limitar a 8 dígitos
+    if (cleanDigits.length <= 8) {
+      setCustomerPhone('+569' + cleanDigits)
     }
   }
 
@@ -323,11 +345,13 @@ function App() {
                   id="customer-phone"
                   type="tel"
                   value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                  placeholder="Ej: +56912345678"
-                  className="name-input"
+                  onChange={handlePhoneChange}
+                  placeholder="+56912345678"
+                  className="name-input phone-input"
                   onKeyPress={(e) => e.key === 'Enter' && handleNameSubmit()}
+                  maxLength={12}
                 />
+                <small className="phone-hint">Ingresa los 8 dígitos de tu número</small>
               </div>
               
               <div className="modal-actions">

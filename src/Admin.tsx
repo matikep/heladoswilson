@@ -23,6 +23,7 @@ interface OrderItem {
 interface Order {
   id: string
   customerName: string
+  customerPhone: string
   items: OrderItem[]
   total: number
   status: 'pending' | 'confirmed' | 'rejected'
@@ -228,7 +229,27 @@ function Admin() {
     const orderRef = ref(database, `orders/${order.id}`)
     set(orderRef, { ...order, status: 'confirmed' })
 
-    alert('Pedido confirmado y stock actualizado')
+    // Generar mensaje de WhatsApp
+    const orderNumber = getOrderNumber(order)
+    let message = `✅ *¡Pedido Confirmado!*\n\n`
+    message += `Hola ${order.customerName}! 👋\n\n`
+    message += `Tu pedido #${orderNumber} ha sido *CONFIRMADO* ✅\n\n`
+    message += `*Detalle del pedido:*\n`
+    order.items.forEach(item => {
+      message += `• ${item.icon} ${item.name} x${item.quantity} - $${item.price * item.quantity}\n`
+    })
+    message += `\n*Total: $${order.total}*\n\n`
+    message += `Pronto nos pondremos en contacto contigo para coordinar la entrega. 🍦\n\n`
+    message += `¡Gracias por tu compra! 😊`
+
+    // Limpiar número de teléfono (quitar espacios, guiones, etc)
+    const cleanPhone = order.customerPhone.replace(/[\s()-]/g, '')
+    const whatsappLink = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`
+    
+    // Abrir WhatsApp
+    window.open(whatsappLink, '_blank')
+    
+    alert('Pedido confirmado y stock actualizado. Se abrirá WhatsApp para notificar al cliente.')
   }
 
   const rejectOrder = (order: Order) => {
@@ -237,7 +258,27 @@ function Admin() {
     const orderRef = ref(database, `orders/${order.id}`)
     set(orderRef, { ...order, status: 'rejected' })
 
-    alert('Pedido rechazado')
+    // Generar mensaje de WhatsApp
+    const orderNumber = getOrderNumber(order)
+    let message = `❌ *Pedido No Disponible*\n\n`
+    message += `Hola ${order.customerName}! 👋\n\n`
+    message += `Lamentablemente tu pedido #${orderNumber} *NO PUEDE SER PROCESADO* en este momento. 😔\n\n`
+    message += `*Detalle del pedido:*\n`
+    order.items.forEach(item => {
+      message += `• ${item.icon} ${item.name} x${item.quantity}\n`
+    })
+    message += `\n*Motivo:* Stock insuficiente o producto no disponible.\n\n`
+    message += `Disculpa las molestias. Te invitamos a hacer un nuevo pedido con los productos disponibles. 🍦\n\n`
+    message += `¡Gracias por tu comprensión! 😊`
+
+    // Limpiar número de teléfono
+    const cleanPhone = order.customerPhone.replace(/[\s()-]/g, '')
+    const whatsappLink = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`
+    
+    // Abrir WhatsApp
+    window.open(whatsappLink, '_blank')
+    
+    alert('Pedido rechazado. Se abrirá WhatsApp para notificar al cliente.')
   }
 
   const deleteOrder = (orderId: string) => {
@@ -549,6 +590,7 @@ function Admin() {
                             <div>
                               <div className="order-number">Pedido #{getOrderNumber(order)}</div>
                               <h4>{order.customerName}</h4>
+                              <p className="order-phone">📱 {order.customerPhone}</p>
                               <p className="order-date">
                                 {new Date(order.createdAt).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}
                               </p>
@@ -608,6 +650,7 @@ function Admin() {
                             <div>
                               <div className="order-number">Pedido #{getOrderNumber(order)}</div>
                               <h4>{order.customerName}</h4>
+                              <p className="order-phone">📱 {order.customerPhone}</p>
                               <p className="order-date">
                                 {new Date(order.createdAt).toLocaleString('es-CL')}
                               </p>
@@ -667,6 +710,7 @@ function Admin() {
                             <div>
                               <div className="order-number">Pedido #{getOrderNumber(order)}</div>
                               <h4>{order.customerName}</h4>
+                              <p className="order-phone">📱 {order.customerPhone}</p>
                               <p className="order-date">
                                 {new Date(order.createdAt).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}
                               </p>
@@ -712,6 +756,7 @@ function Admin() {
                             <div>
                               <div className="order-number">Pedido #{getOrderNumber(order)}</div>
                               <h4>{order.customerName}</h4>
+                              <p className="order-phone">📱 {order.customerPhone}</p>
                               <p className="order-date">
                                 {new Date(order.createdAt).toLocaleString('es-CL')}
                               </p>
@@ -757,6 +802,7 @@ function Admin() {
                             <div>
                               <div className="order-number">Pedido #{getOrderNumber(order)}</div>
                               <h4>{order.customerName}</h4>
+                              <p className="order-phone">📱 {order.customerPhone}</p>
                               <p className="order-date">
                                 {new Date(order.createdAt).toLocaleString('es-CL')}
                               </p>

@@ -483,13 +483,25 @@
   font-size: 1rem;
 }
 
+.form-field {
+  margin-bottom: 1.25rem;
+  text-align: left;
+}
+
+.form-field label {
+  display: block;
+  font-weight: 600;
+  color: var(--dark-brown);
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
 .name-input {
   width: 100%;
   padding: 1rem 1.5rem;
   border: 2px solid var(--peach);
   border-radius: 12px;
   font-size: 1.1rem;
-  margin-bottom: 1.5rem;
   transition: all 0.3s ease;
   font-family: inherit;
 }

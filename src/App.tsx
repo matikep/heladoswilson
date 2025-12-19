@@ -20,13 +20,18 @@ function App() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [customerName, setCustomerName] = useState('')
+  const [customerPhone, setCustomerPhone] = useState('')
   const [showNameModal, setShowNameModal] = useState(false)
 
-  // Cargar nombre desde localStorage al iniciar
+  // Cargar nombre y teléfono desde localStorage al iniciar
   useEffect(() => {
     const savedName = localStorage.getItem('customerName')
+    const savedPhone = localStorage.getItem('customerPhone')
     if (savedName) {
       setCustomerName(savedName)
+    }
+    if (savedPhone) {
+      setCustomerPhone(savedPhone)
     }
   }, [])
 
@@ -103,7 +108,7 @@ function App() {
   }
 
   const handleSendOrder = async () => {
-    if (!customerName.trim()) {
+    if (!customerName.trim() || !customerPhone.trim()) {
       setShowNameModal(true)
       return
     }
@@ -116,6 +121,7 @@ function App() {
       const orderData = {
         id: newOrderRef.key,
         customerName: customerName.trim(),
+        customerPhone: customerPhone.trim(),
         items: cart.map(item => ({
           id: item.id,
           name: item.name,
@@ -146,13 +152,21 @@ function App() {
   }
 
   const handleNameSubmit = () => {
-    if (customerName.trim()) {
-      // Guardar nombre en localStorage
+    if (customerName.trim() && customerPhone.trim()) {
+      // Validar formato de teléfono (básico)
+      const phoneRegex = /^[0-9+\s()-]+$/
+      if (!phoneRegex.test(customerPhone.trim())) {
+        alert('Por favor ingresa un número de teléfono válido')
+        return
+      }
+      
+      // Guardar nombre y teléfono en localStorage
       localStorage.setItem('customerName', customerName.trim())
+      localStorage.setItem('customerPhone', customerPhone.trim())
       setShowNameModal(false)
       handleSendOrder()
     } else {
-      alert('Por favor ingresa tu nombre')
+      alert('Por favor completa todos los campos')
     }
   }
 
@@ -287,17 +301,35 @@ function App() {
         {showNameModal && (
           <div className="modal-overlay" onClick={() => setShowNameModal(false)}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <h2>¿Cuál es tu nombre?</h2>
-              <p>Para procesar tu pedido, necesitamos saber cómo te llamas</p>
-              <input
-                type="text"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="Ingresa tu nombre"
-                className="name-input"
-                autoFocus
-                onKeyPress={(e) => e.key === 'Enter' && handleNameSubmit()}
-              />
+              <h2>📝 Información de Contacto</h2>
+              <p>Para procesar tu pedido, necesitamos tus datos</p>
+              
+              <div className="form-field">
+                <label htmlFor="customer-name">Nombre completo</label>
+                <input
+                  id="customer-name"
+                  type="text"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder="Ej: Juan Pérez"
+                  className="name-input"
+                  autoFocus
+                />
+              </div>
+              
+              <div className="form-field">
+                <label htmlFor="customer-phone">Teléfono (WhatsApp)</label>
+                <input
+                  id="customer-phone"
+                  type="tel"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  placeholder="Ej: +56912345678"
+                  className="name-input"
+                  onKeyPress={(e) => e.key === 'Enter' && handleNameSubmit()}
+                />
+              </div>
+              
               <div className="modal-actions">
                 <button onClick={handleNameSubmit} className="confirm-btn">
                   Continuar

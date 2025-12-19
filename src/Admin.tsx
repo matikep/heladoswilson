@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { ref, onValue, set } from 'firebase/database'
-import { database } from './firebase'
+import { database, auth, googleProvider } from './firebase'
+import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth'
 import './Admin.css'
 
 interface Product {
@@ -29,14 +30,19 @@ interface Order {
   createdAt: string
 }
 
-const ADMIN_PASSWORD = 'wilsondeloswilsonitos2025' // Cambia esta contraseña
+// Lista blanca de emails autorizados para acceder al panel admin
+const AUTHORIZED_EMAILS = [
+  'matikep@gmail.com'
+  // Agrega más emails aquí si necesitas dar acceso a más personas
+  // 'empleado@gmail.com',
+  // 'familia@gmail.com',
+]
 
 function Admin() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [password, setPassword] = useState('')
+  const [isAuthorized, setIsAuthorized] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [products, setProducts] = useState<Product[]>([])
   const [orders, setOrders] = useState<Order[]>([])
-  const [loading, setLoading] = useState(true)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
   const [activeTab, setActiveTab] = useState<'products' | 'orders'>('products')
@@ -49,7 +55,33 @@ function Admin() {
     stock: 10
   })
 
+  // Verificar autenticación
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      
+      if (currentUser?.email) {
+        // Verificar si el email está en la lista blanca
+        const authorized = AUTHORIZED_EMAILS.includes(currentUser.email)
+        setIsAuthorized(authorized)
+        
+        if (!authorized) {
+          // Si no está autorizado, cerrar sesión automáticamente
+          signOut(auth)
+          alert('❌ No tienes permisos para acceder al panel de administración.')
+        }
+      } else {
+        setIsAuthorized(false)
+      }
+      
+      setLoading(false)
+    })
+
+    return () => unsubscribe()
+  }, [])
+
+  useEffect(() => {
+    if (!isAuthorized) return
+
     // Escuchar cambios en el stock
     const stockRef = ref(database, 'stock')
     const unsubscribeStock = onValue(stockRef, (snapshot) => {
@@ -68,7 +100,6 @@ function Admin() {
         setProducts(defaultProducts)
         set(stockRef, defaultProducts)
       }
-      setLoading(false)
     })
 
     // Escuchar cambios en los pedidos
@@ -89,16 +120,23 @@ function Admin() {
       unsubscribeStock()
       unsubscribeOrders()
     }
-  }, [])
+  }, [isAuthorized])
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true)
-      setPassword('')
-    } else {
-      alert('Contraseña incorrecta')
-      setPassword('')
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider)
+      // El onAuthStateChanged manejará la verificación del email
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error)
+      alert('Error al iniciar sesión con Google. Por favor intenta nuevamente.')
+    }
+  }
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth)
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error)
     }
   }
 
@@ -248,7 +286,7 @@ function Admin() {
     )
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthorized) {
     return (
       <div className="admin-container">
         <div className="admin-login">
@@ -257,19 +295,20 @@ function Admin() {
             <h1>Panel de Administración</h1>
             <p>Helados Caseros</p>
           </div>
-          <form onSubmit={handleLogin} className="login-form">
-            <input
-              type="password"
-              placeholder="Contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="password-input"
-              autoFocus
-            />
-            <button type="submit" className="login-btn">
-              Ingresar
+          <div className="login-form">
+            <button onClick={handleGoogleSignIn} className="google-signin-btn">
+              <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
+                <path d="M9.003 18c2.43 0 4.467-.806 5.956-2.18L12.05 13.56c-.806.54-1.836.86-3.047.86-2.344 0-4.328-1.584-5.036-3.711H.96v2.332C2.44 15.983 5.485 18 9.003 18z" fill="#34A853"/>
+                <path d="M3.964 10.712c-.18-.54-.282-1.117-.282-1.71 0-.593.102-1.17.282-1.71V4.96H.957C.347 6.175 0 7.55 0 9.002c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+                <path d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.426 0 9.003 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z" fill="#EA4335"/>
+              </svg>
+              Continuar con Google
             </button>
-          </form>
+            <p className="login-info">
+              Solo usuarios autorizados pueden acceder
+            </p>
+          </div>
         </div>
       </div>
     )
@@ -283,7 +322,7 @@ function Admin() {
             <h1>🍦 Panel de Administración</h1>
             <p>Gestión Completa de Productos</p>
           </div>
-          <button onClick={() => setIsAuthenticated(false)} className="logout-btn">
+          <button onClick={handleSignOut} className="logout-btn">
             Cerrar Sesión
           </button>
         </div>

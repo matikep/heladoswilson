@@ -88,16 +88,31 @@ Para habilitar el sistema de stock en tiempo real, sigue la guía completa en:
 
 Accede al panel admin en: `https://tu-app.vercel.app/admin`
 
+**Autenticación:**
+- 🔒 **Inicio de sesión con Google** (OAuth)
+- ✅ Un solo click para entrar
+- ✅ Solo emails autorizados pueden acceder
+- ✅ No hay contraseñas que recordar
+
 **Funcionalidades:**
 - ✅ Actualizar stock de productos en tiempo real
+- ✅ Ver y gestionar pedidos (pendientes, confirmados, rechazados)
 - ✅ Ver estado del inventario (disponible, stock bajo, agotado)
 - ✅ Resetear todo el stock con un click
-- ✅ Protegido con contraseña
+- ✅ Agregar, editar y eliminar productos
+- ✅ Múltiples usuarios admin
 
-**Cambiar contraseña del admin:**
-Edita `src/Admin.tsx` línea 14:
+**Configurar Google Authentication:**
+Sigue la guía completa en: **[📖 GOOGLE_AUTH_SETUP.md](./GOOGLE_AUTH_SETUP.md)**
+
+**Agregar más administradores:**
+Edita `src/Admin.tsx` líneas 32-38:
 ```typescript
-const ADMIN_PASSWORD = 'helados2024' // Cambia esta contraseña
+const AUTHORIZED_EMAILS = [
+  'matikep@gmail.com',
+  'empleado@gmail.com',  // Agrega más emails aquí
+  'familia@gmail.com'
+]
 ```
 
 

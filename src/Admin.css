@@ -91,6 +91,49 @@
   box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
 }
 
+/* Google Sign-In Button */
+.google-signin-btn {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  background: white;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-family: 'Outfit', 'Roboto', sans-serif;
+  box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+}
+
+.google-signin-btn:hover {
+  background: #f8f9fa;
+  border-color: #d2e3fc;
+  box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
+}
+
+.google-signin-btn:active {
+  background: #eceff1;
+  box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+}
+
+.google-signin-btn svg {
+  flex-shrink: 0;
+}
+
+.login-info {
+  text-align: center;
+  color: var(--brown);
+  font-size: 0.85rem;
+  margin-top: 1rem;
+  opacity: 0.8;
+}
+
 /* Admin Panel */
 .admin-panel {
   background: white;
